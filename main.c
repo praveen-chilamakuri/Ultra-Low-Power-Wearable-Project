@@ -1,5 +1,5 @@
-/* This is the main.c file of cubeide configured using cubemx for ultra low power wearable project 
-   Updated: 02/08/2026
+/* This is the main.c file of cubeide (configured using cubemx) for ultra-low-power wearable project 
+   Updated: 06/08/2026
    Github: https://github.com/praveen-chilamakuri/Ultra-Low-Power-Wearable-Project
 */
 
@@ -41,22 +41,27 @@ typedef enum {
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define TEMP_ALERT_LIMIT    38   // temperature threshold
-#define ECG_FS              125
-#define ECG_BUFFER_SIZE     250
-#define ECG_MIN_RR_MS       300
-#define ECG_MAX_RR_MS       1500
-#define ECG_REFRACTORY_MS   250
+#define TEMP_ALERT_LIMIT    38          // Temperature alert threshold (°C)
 
-#define FP_SCALE            1024
-#define ALPHA_BASELINE_SHIFT 7
-#define ALPHA_PEAK_SHIFT     4
+#define ECG_FS              125         // ECG sampling frequency (Hz)
+#define ECG_BUFFER_SIZE     250         // Number of samples per batch
 
+#define ECG_MIN_RR_MS       300         // Minimum RR interval (bpm ~200)
+#define ECG_MAX_RR_MS       1500        // Maximum RR interval (bpm ~40)
+#define ECG_REFRACTORY_MS   250         // Ignore peaks for 250ms after a valid R-peak
+
+/* Fixed-point scaling and filter parameters */
+#define FP_SCALE            1024        // Multiply ADC sample by 1024 for fixed-point math
+#define ALPHA_BASELINE_SHIFT 7          // Baseline IIR filter smoothing factor
+#define ALPHA_PEAK_SHIFT     4          // Adaptive threshold smoothing factor
+
+/* R-peak detection threshold: rectified > 1.5 * threshold */
 #define K_NUM               3
 #define K_DEN               2
 
-#define BPM_ALERT_THRESHOLD     105    // heart rate threshold
-#define BPM_ALERT_COUNT_LIMIT   5
+/* BPM alert logic */
+#define BPM_ALERT_THRESHOLD     105    // Heart rate threshold
+#define BPM_ALERT_COUNT_LIMIT   5      // Must exceed threshold 5 consecutive cycles
 
 #define MS_PER_SECOND             1000U
 #define MS_PER_MINUTE             60000U
@@ -70,18 +75,19 @@ typedef enum {
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t sht31_raw[3];        // 3-byte only temperature array for [MSB, LSB, CRC]
-
-volatile LP_State_t current_state;
+uint8_t sht31_raw[3];                               // Raw temperature bytes from SHT31
+volatile LP_State_t current_state;                  // Current state machine
 volatile uint8_t one_shot_timer_flag = 0;
-volatile uint16_t ecgBuffer[ECG_BUFFER_SIZE];
 
+volatile uint16_t ecgBuffer[ECG_BUFFER_SIZE];       // DMA ECG buffer
 
-static int32_t baseline_fp   = 0;
-static int32_t threshold_fp  = 0;
-static int32_t prev1_fp      = 0;
-static int32_t prev2_fp      = 0;
+/* Fixed-point ECG filter variables */
+static int32_t baseline_fp   = 0;                   // Slowly-moving baseline estimate
+static int32_t threshold_fp  = 0;                   // Adaptive threshold for R-peak detection
+static int32_t prev1_fp      = 0;                   // Previous high-pass sample
+static int32_t prev2_fp      = 0;                   // Second previous high-pass sample
 
+/* RR interval tracking */
 static uint32_t sampleCounter     = 0;
 static uint32_t lastRPeakTimeMs   = 0;
 static uint32_t rrHistory[5]      = {0};
@@ -89,8 +95,7 @@ static uint8_t  rrCount           = 0;
 static uint8_t  rrIndex           = 0;
 
 static uint8_t  bpmAlertCounter = 0;
-
-volatile uint32_t bpm_int         = 0;
+volatile uint32_t bpm_int         = 0;              // Final BPM result
 
 /* USER CODE END PV */
 
@@ -106,6 +111,13 @@ static ECG_Status_t RunECGSamplingAndProcessing(uint8_t *alert_detected2, uint8_
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+/* UART Retargeting for printf() */
+
+int _write(int file, char *ptr, int len)
+{
+    HAL_UART_Transmit(&huart2, (uint8_t*)ptr, len, HAL_MAX_DELAY);
+    return len;
+}
 
 /* USER CODE END 0 */
 
@@ -153,28 +165,33 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-       Restore_System_Clocks();     // restore clocks after stop wakeup
-       HAL_ResumeTick();          // Resume SysTick timer
-       Restore_Peripherals();     // Re-initialize I2C, ADC, UART, and GPIOs
+      /* ----------------------------------------------------------
+         * 1. Restore clocks and peripherals after STOP mode wakeup
+         * ---------------------------------------------------------- */
+
+       Restore_System_Clocks();
+       HAL_ResumeTick();
+       Restore_Peripherals();
 
       printf("\r\nExited Stop Mode \r\n");
 
-      // power on SHT31 & AD8232
+      /* ----------------------------------------------------------
+         * 2. Power on SHT31 and trigger temperature measurement
+         * ---------------------------------------------------------- */
 
       HAL_GPIO_WritePin(SHT31_PWR_GPIO_Port, SHT31_PWR_Pin, GPIO_PIN_SET);
       HAL_GPIO_WritePin(AD8232_SDN_GPIO_Port, AD8232_SDN_Pin, GPIO_PIN_SET);
 
-        HAL_Delay(2); // for SHT31 internal micro-boot
+        HAL_Delay(2); // SHT31 internal boot
 
-      uint8_t cmd[2] = {0x24, 0x0B};   // no stretch, medium repeatability sht31 command
+      uint8_t cmd[2] = {0x24, 0x0B};    // sht31 command for single-shot temp measurement
       HAL_I2C_Master_Transmit(&hi2c1, (0x44 << 1), cmd, 2, 10);
 
-      // sleep until SHT31 internal measurement completes
-
+      /* Sleep until SHT31 finishes measurement */
         current_state = STATE_SHT31_CONVERTING;
         one_shot_timer_flag = 0;
 
-      __HAL_TIM_SET_AUTORELOAD(&htim2, 4999);
+      __HAL_TIM_SET_AUTORELOAD(&htim2, 4999);  // 5ms
       __HAL_TIM_SET_COUNTER(&htim2, 0);
       __HAL_RCC_TIM2_CLK_ENABLE();
       HAL_TIM_Base_Start_IT(&htim2);
@@ -190,7 +207,9 @@ int main(void)
       __HAL_RCC_TIM2_CLK_DISABLE();
 
 
-      // Read the raw temperature only data from SHT31
+      /* ----------------------------------------------------------
+         * 3. Read temperature and check alert
+         * ---------------------------------------------------------- */
 
       HAL_I2C_Master_Receive(&hi2c1, (0x44 << 1), sht31_raw, 3, 10);
       HAL_GPIO_WritePin(SHT31_PWR_GPIO_Port, SHT31_PWR_Pin, GPIO_PIN_RESET);   // Power off SHT31
@@ -208,7 +227,9 @@ int main(void)
           alert_detected1 = 1;
       }
 
-      // Sleep until AD8232 fully stabilize internally
+      /* ----------------------------------------------------------
+         * 4. Warm-up AD8232 (143ms)
+         * ---------------------------------------------------------- */
 
       current_state = STATE_AD8232_WARMING;
       one_shot_timer_flag = 0;
@@ -230,37 +251,26 @@ int main(void)
       __HAL_RCC_TIM2_CLK_DISABLE();
 
 
-      // Check leads off status before setting up ADC to avoid unnecessary sampling that results in garbage values out
+      /* ----------------------------------------------------------
+         * 5. ECG sampling + processing
+         * ---------------------------------------------------------- */
 
       uint8_t alert_detected2 = 0;
       uint8_t alert_detected3 = 0;
 
       RunECGSamplingAndProcessing(&alert_detected2,&alert_detected3);
 
+      /* ----------------------------------------------------------
+         * 6. Wake ESP32 if any alert occurred
+         * ---------------------------------------------------------- */
 
-      if (alert_detected1 || alert_detected2 || alert_detected3)    // temperature threshold crossed or leads off detected or heartrate threshold crossed
+      if (alert_detected1 || alert_detected2 || alert_detected3)
       {
-          printf("Alert, waking up ESP32 \r\n");
+
+    	  current_state = STATE_ESP32_WAKEUP;
+    	  printf("Alert, waking up ESP32 \r\n");
           HAL_GPIO_WritePin(ESP32_WKUP_GPIO_Port, ESP32_WKUP_Pin, GPIO_PIN_SET);
-
-          current_state = STATE_ESP32_WAKEUP;
-          one_shot_timer_flag = 0;
-
-                      __HAL_TIM_SET_AUTORELOAD(&htim2, 499);
-                      __HAL_TIM_SET_COUNTER(&htim2, 0);
-                      __HAL_RCC_TIM2_CLK_ENABLE();
-                      HAL_TIM_Base_Start_IT(&htim2);
-
-                      HAL_SuspendTick();
-                      while (!one_shot_timer_flag)
-                      {
-                          HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
-                      }
-                      HAL_ResumeTick();
-
-                      HAL_TIM_Base_Stop_IT(&htim2);
-                      __HAL_RCC_TIM2_CLK_DISABLE();
-
+          HAL_Delay(1);
           HAL_GPIO_WritePin(ESP32_WKUP_GPIO_Port, ESP32_WKUP_Pin, GPIO_PIN_RESET);
       }
       else
@@ -268,20 +278,20 @@ int main(void)
           printf("No Alerts, entering STOP mode \r\n");
       }
 
-      // Ensure all external sensors and controls are driven low
+      /* ----------------------------------------------------------
+         * 7. Power down sensors and prepare MCU for STOP mode
+         * ---------------------------------------------------------- */
+
             HAL_GPIO_WritePin(SHT31_PWR_GPIO_Port, SHT31_PWR_Pin, GPIO_PIN_RESET);
             HAL_GPIO_WritePin(AD8232_SDN_GPIO_Port, AD8232_SDN_Pin, GPIO_PIN_RESET);
 
-            // De-initialize active peripherals and switch pins to Analog mode
             Prepare_For_Sleep();
-
-            // Suspend SysTick to prevent periodic wakeup interrupts
             HAL_SuspendTick();
-
-            // Enable Flash Power Down during STOP mode for maximum savings
             HAL_PWREx_EnableFlashPowerDown();
 
-     // Enter STOP mode
+        /* ----------------------------------------------------------
+         * 8. Enter STOP mode (lowest power)
+         * ---------------------------------------------------------- */
 
      current_state = STATE_ENTERING_STOP;
      HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
@@ -369,22 +379,54 @@ void ProcessECGBuffer(void)
     {
         for (uint16_t i = 0; i < ECG_BUFFER_SIZE; i++)
         {
+
+         /* ----------------------------------------------------------
+         * 1. Convert ADC sample to fixed-point
+         *    (gives more resolution without floating point)
+         * ---------------------------------------------------------- */
+
             int32_t sample_fp = ((int32_t)ecgBuffer[i]) * FP_SCALE;
+
+         /* ----------------------------------------------------------
+         * 2. Baseline removal (IIR low-pass)
+         *    baseline_fp slowly follows the signal
+         *    hp_fp = sample - baseline removes drift
+         * ---------------------------------------------------------- */
 
             baseline_fp += ((sample_fp - baseline_fp) >> ALPHA_BASELINE_SHIFT);
             int32_t hp_fp = sample_fp - baseline_fp;
+
+         /* ----------------------------------------------------------
+         * 3. 3-point moving average smoothing
+         * ---------------------------------------------------------- */
 
             int32_t smooth_fp = (hp_fp + prev1_fp + prev2_fp) / 3;
             prev2_fp = prev1_fp;
             prev1_fp = hp_fp;
 
+         /* ----------------------------------------------------------
+         * 4. Full-wave rectification
+         * ---------------------------------------------------------- */
+
             int32_t rect_fp = (smooth_fp >= 0) ? smooth_fp : -smooth_fp;
 
+         /* ----------------------------------------------------------
+         * 5. Adaptive threshold tracking
+         *    threshold_fp slowly follows rectified peaks
+         * ---------------------------------------------------------- */
+
             threshold_fp += ((rect_fp - threshold_fp) >> ALPHA_PEAK_SHIFT);
+
+         /* ----------------------------------------------------------
+         * 6. Compute sample time in ms
+         * ---------------------------------------------------------- */
 
             uint32_t sampleTimeMs = sampleCounter * MS_PER_SECOND / ECG_FS;
             sampleCounter++;
 
+         /* ----------------------------------------------------------
+         * 7. Refractory check (ignore peaks for 250ms)
+         * ---------------------------------------------------------- */
             uint8_t inRefractory = 0;
             if (lastRPeakTimeMs != 0)
             {
@@ -393,33 +435,46 @@ void ProcessECGBuffer(void)
                     inRefractory = 1;
             }
 
+         /* ----------------------------------------------------------
+         * 8. R-peak detection
+         *    rect_fp > 1.5 * threshold_fp
+         * ---------------------------------------------------------- */
+
             if (!inRefractory &&
                 (rect_fp * K_DEN > threshold_fp * K_NUM))
             {
+                /* If previous peak exists, compute RR interval */
                 if (lastRPeakTimeMs != 0)
                 {
                     uint32_t rrMs = sampleTimeMs - lastRPeakTimeMs;
 
+                    /* Valid RR interval range */
                     if (rrMs >= ECG_MIN_RR_MS && rrMs <= ECG_MAX_RR_MS)
                     {
                         rrHistory[rrIndex] = rrMs;
                         rrIndex = (rrIndex + 1) % 5;
                         if (rrCount < 5) rrCount++;
 
+                        /* Average RR interval */
                         uint32_t sumRR = 0;
                         for (uint8_t k = 0; k < rrCount; k++)
                             sumRR += rrHistory[k];
 
                         uint32_t avgRR = sumRR / rrCount;
 
+                        /* Convert RR → BPM */
                         bpm_int = MS_PER_MINUTE / avgRR;
                     }
                 }
 
+                /* Update last peak time */
                 lastRPeakTimeMs = sampleTimeMs;
             }
         }
 
+     /* --------------------------------------------------------------
+     * 9. BPM alert logic
+     * -------------------------------------------------------------- */
         if (bpm_int > BPM_ALERT_THRESHOLD)
         {
             if (bpmAlertCounter < BPM_ALERT_COUNT_LIMIT)
@@ -434,34 +489,34 @@ void ProcessECGBuffer(void)
 
 void Prepare_For_Sleep(void)
 {
-    //  De-initialize peripherals
+    /*  De-initialize peripherals  */
     HAL_I2C_DeInit(&hi2c1);
     HAL_ADC_DeInit(&hadc1);
     HAL_UART_DeInit(&huart2);
 
-    //  Disable peripheral clocks
+    /*  Disable peripheral clocks  */
     __HAL_RCC_I2C1_CLK_DISABLE();
     __HAL_RCC_ADC1_CLK_DISABLE();
     __HAL_RCC_USART2_CLK_DISABLE();
 
-    //  Reconfigure Peripheral Pins & Unused Pins to Analog
+    /*  Reconfigure Peripheral Pins & Unused Pins to Analog  */
     GPIO_InitTypeDef GPIO_InitStruct = {0};
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
 
-    // I2C1 Pins
+    /* I2C1 Pins */
     GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-    // ADC1 Pin
+    /* ADC1 Pin */
     GPIO_InitStruct.Pin = GPIO_PIN_1;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    // USART2 Pins
+    /* USART2 Pins */
     GPIO_InitStruct.Pin = GPIO_PIN_2 | GPIO_PIN_3;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    // Leads-Off Detection Pins
+    /* Leads-Off Detection Pins */
     GPIO_InitStruct.Pin = LO_PLUS_Pin | LO_MINUS_Pin;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
@@ -469,12 +524,12 @@ void Prepare_For_Sleep(void)
 
 void Restore_Peripherals(void)
 {
-    //  Re-enable Peripheral Clocks
+    /* Re-enable Peripheral Clocks */
     __HAL_RCC_I2C1_CLK_ENABLE();
     __HAL_RCC_ADC1_CLK_ENABLE();
     __HAL_RCC_USART2_CLK_ENABLE();
 
-    //  Re-initialize GPIOs & Peripherals
+    /* Re-initialize GPIOs & Peripherals */
     MX_GPIO_Init();
     MX_I2C1_Init();
     MX_ADC1_Init();
@@ -497,13 +552,13 @@ static ECG_Status_t RunECGSamplingAndProcessing(uint8_t *alert_detected2, uint8_
             sampleCounter    = 0;
 
 
-         // Check leads-off first
+         /* Check leads-off first */
          if (HAL_GPIO_ReadPin(LO_PLUS_GPIO_Port, LO_PLUS_Pin) == GPIO_PIN_SET ||
              HAL_GPIO_ReadPin(LO_MINUS_GPIO_Port, LO_MINUS_Pin) == GPIO_PIN_SET)
          {
              printf("Leads OFF \r\n");
 
-             // Reset ECG state variables
+             /* Reset ECG state variables */
              bpm_int        = 0;
              baseline_fp    = 0;
              threshold_fp   = 0;
@@ -516,18 +571,18 @@ static ECG_Status_t RunECGSamplingAndProcessing(uint8_t *alert_detected2, uint8_
              *alert_detected2 = 1;
 
 
-             // Power down AD8232 immediately
+             /* Power down AD8232 immediately */
              HAL_GPIO_WritePin(AD8232_SDN_GPIO_Port, AD8232_SDN_Pin, GPIO_PIN_RESET);
 
              return ECG_STATUS_LEADS_OFF;
          }
 
 
-        // Normal ECG sampling path
+        /* Normal ECG sampling path */
          current_state       = STATE_ECG_SAMPLING;
          one_shot_timer_flag = 0;
 
-         __HAL_TIM_SET_AUTORELOAD(&htim3, 7999);  // 8 ms period at current clock
+         __HAL_TIM_SET_AUTORELOAD(&htim3, 7999);    // 8ms
          __HAL_TIM_SET_COUNTER(&htim3, 0);
 
          __HAL_RCC_TIM3_CLK_ENABLE();
@@ -549,7 +604,7 @@ static ECG_Status_t RunECGSamplingAndProcessing(uint8_t *alert_detected2, uint8_
          __HAL_RCC_TIM3_CLK_DISABLE();
          __HAL_RCC_ADC1_CLK_DISABLE();
 
-         // Process buffer
+         /* Process buffer */
          one_shot_timer_flag = 0;
          ProcessECGBuffer();
          printf("BPM = %lu\r\n", bpm_int);
@@ -561,7 +616,7 @@ static ECG_Status_t RunECGSamplingAndProcessing(uint8_t *alert_detected2, uint8_
              *alert_detected3 = 1;
          }
 
-         // Power down AD8232 after sampling
+         /* Power down AD8232 after sampling */
          HAL_GPIO_WritePin(AD8232_SDN_GPIO_Port, AD8232_SDN_Pin, GPIO_PIN_RESET);
 
          return ECG_STATUS_OK;
