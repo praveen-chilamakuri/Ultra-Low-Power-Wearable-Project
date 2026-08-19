@@ -1,7 +1,30 @@
-/* This is the main.c file of cubeide (configured using cubemx) for ultra-low-power wearable project 
-   Updated: 06/08/2026
-   Github: https://github.com/praveen-chilamakuri/Ultra-Low-Power-Wearable-Project
-*/
+/* =====================================================================================================
+ *  PRELIMINARY USER REQUIREMENTS
+ *  -----------------------------------------------------------------------------------------------------
+ *  This source code has been developed within the STM32CubeIDE environment and depends on peripheral
+ *  configurations generated through STM32CubeMX. Proper use, replication of this
+ *  firmware requires prior understanding of the following:
+ *
+ *  1. STM32CubeMX Configuration Principles
+ *     - Pin assignment and alternate-function mapping for GPIO.
+ *     - Peripheral configuration for ADC with DMA, I2C communication, timer modules, RTC, and USART.
+ *     - System clock configuration (HSI, LSI, pre-scalers) and HAL initialization sequences.
+ *
+ *  2. STM32CubeIDE and HAL Framework
+ *     - Project structure, build process, and debugging workflow within CubeIDE.
+ *     - Operation of HAL drivers, interrupt callbacks, and auto‑generated initialization routines.
+ *
+ *  3. Peripheral and Sensor Familiarisation
+ *     - Functional behaviour of the SHT31 temperature sensor and AD8232 ECG front-end.
+ *     - Understanding of leads‑off detection, ECG sampling timing, and DMA‑based data acquisition.
+ *     - ESP32 wake‑up signalling and low‑power system interaction.
+ *
+ *  4. Low‑Power System Behaviour
+ *     - STOP and SLEEP modes, including clock restoration and peripheral re‑initialisation after wake‑up.
+ *
+ *  This header serves to ensure that readers recognise the prerequisite knowledge
+ *  required to correctly interpret the firmware presented in this project.
+ * ===================================================================================================== */
 
 
 /* USER CODE BEGIN Header */
