@@ -118,27 +118,15 @@ To design and evaluate an ultra‑low‑power wearable capable of multi‑week p
 
 
 
-#### **Parameter                                               Result**
 
 
-
-Average Current Consumption       ------->          	0.68 mA
-
-
-
-Battery Life Projection (AAA)     ------->            	45-50 days
-
-
-
-Temperature Accuracy              ------->              Stable single shot SHT31 readings
-
-
-
-ECG Performance                   ------->            	Reliable R peak detection
-
-
-
-BLE Alerts                        ------->              Triggered on threshold events only
+|**Parameter**|**Result**|
+|-|-|
+|Average Current Consumption|0.68 mA|
+|Battery Life Projection (AAA)|45-50 days|
+|Temperature Accuracy|Stable single shot SHT31 readings|
+|ECG Performance|Reliable R peak detection|
+|BLE Alerts|Triggered on threshold events only|
 
 
 
@@ -148,7 +136,7 @@ BLE Alerts                        ------->              Triggered on threshold e
 
 
 
-### **Ultra-Low-Power-Wearable-Project**/
+**Ultra-Low-Power-Wearable-Project**/
 
 │
 
