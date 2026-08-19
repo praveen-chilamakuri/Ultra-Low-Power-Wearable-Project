@@ -190,7 +190,7 @@ Ultra-Low-Power-Wearable-Project/
 
 
 
-1. Temperature > 38°Cs
+1. Temperature > 38°C
 2. BPM > 102 bpm
 3. ECG leads‑off detection
 
