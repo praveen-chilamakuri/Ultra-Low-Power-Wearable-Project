@@ -1,12 +1,12 @@
-### **Ultra-Low-Power Wearable for Long-Term Physiological Monitoring**
+## **Ultra-Low-Power Wearable for Long-Term Physiological Monitoring**
 
 
 
-###### **Heart Rate • Temperature • BLE Alerts • Multi‑Week Battery Life**
+#### **Heart Rate • Temperature • BLE Alerts • Multi‑Week Battery Life**
 
 
 
-#### **Overview**
+### **Overview**
 
 
 
@@ -23,7 +23,7 @@ The system integrates **SHT31, AD8232, STM32F401RE,** and **ESP32 Wroom‑32,** 
 
 
 
-###### **This repository contains:**
+#### **This repository contains:**
 
 
 
@@ -47,7 +47,7 @@ This work was completed as part of the **MSc Embedded Systems Engineering** diss
 
 
 
-#### **Aim**
+### **Aim**
 
 
 
@@ -55,7 +55,7 @@ To design and evaluate an ultra‑low‑power wearable capable of multi‑week p
 
 
 
-#### **Hardware Used**
+### **Hardware Used**
 
 
 
@@ -83,11 +83,11 @@ To design and evaluate an ultra‑low‑power wearable capable of multi‑week p
 
 
 
-#### **System Architecture**
+### **System Architecture**
 
-###### 
 
-###### **Key Low-Power Techniques**
+
+#### **Key Low-Power Techniques**
 
 
 
@@ -115,7 +115,7 @@ To design and evaluate an ultra‑low‑power wearable capable of multi‑week p
 
 
 
-#### **Experimental Results**
+### **Experimental Results**
 
 
 
@@ -129,7 +129,7 @@ To design and evaluate an ultra‑low‑power wearable capable of multi‑week p
 
 
 
-#### **Repository Structure**
+### **Repository Structure**
 
 
 
@@ -155,11 +155,11 @@ Ultra-Low-Power-Wearable-Project/
 
 
 
-#### **How to Build \& Flash**
+### **How to Build \& Flash**
 
 
 
-###### **STM32 (Main MCU)**
+#### **STM32 (Main MCU)**
 
 
 
@@ -173,7 +173,7 @@ Ultra-Low-Power-Wearable-Project/
 
 
 
-###### **ESP32 (BLE-Alerts MCU)**
+#### **ESP32 (BLE-Alerts MCU)**
 
 
 
@@ -186,11 +186,11 @@ Ultra-Low-Power-Wearable-Project/
 
 
 
-###### **BLE Alerts Implemented**
+#### **BLE Alerts Implemented**
 
 
 
-1. Temperature > 38°C
+1. Temperature > 38°Cs
 2. BPM > 102 bpm
 3. ECG leads‑off detection
 
@@ -198,9 +198,9 @@ Ultra-Low-Power-Wearable-Project/
 
 Alerts are **event‑driven**, not continuous, reducing wireless overhead.
 
+### 
 
-
-#### **Future Work**
+### **Future Work**
 
 
 
@@ -214,9 +214,9 @@ Alerts are **event‑driven**, not continuous, reducing wireless overhead.
 
 * Improved ECG filtering pipeline
 
+### 
 
-
-#### **License**
+### **License**
 
 
 
