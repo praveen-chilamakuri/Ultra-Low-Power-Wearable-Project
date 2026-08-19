@@ -6,15 +6,11 @@ This project implements an ultra‑low‑power wearable device capable of long�
 
 
 
-Heart rate (ECG R‑peak detection)
+* Heart rate (ECG R‑peak detection)
 
+* Body temperature
 
-
-Body temperature
-
-
-
-Threshold‑based BLE alerts
+* Threshold‑based BLE alerts
 
 
 
@@ -26,19 +22,19 @@ The system integrates SHT31, AD8232, STM32F401RE, and ESP32 Wroom‑32, using a 
 
 
 
-Embedded firmware (STM32 HAL + ESP32)
+* Embedded firmware (STM32 HAL + ESP32)
 
 
 
-System‑level low‑power architecture
+* System‑level low‑power architecture
 
 
 
-Power‑measurement methodology
+* Power‑measurement methodology
 
 
 
-Documentation and hardware photos
+* Documentation and hardware photos
 
 
 
@@ -58,27 +54,27 @@ To design and evaluate an ultra‑low‑power wearable capable of multi‑week p
 
 
 
-STM32F401RE Nucleo (Stop/Sleep modes, DMA sampling)
+* STM32F401RE Nucleo (Stop/Sleep modes, DMA sampling)
 
 
 
-ESP32 Wroom‑32 DevKit (Deep sleep + BLE alerts)
+* ESP32 Wroom‑32 DevKit (Deep sleep + BLE alerts)
 
 
 
-AD8232 ECG Front-End
+* AD8232 ECG Front-End
 
 
 
-SHT31 Temperature Sensor
+* SHT31 Temperature Sensor
 
 
 
-AAA Battery (Projected 45-50 days)
+* AAA Battery (Projected 45-50 days)
 
 
 
-Multimeter (IDD pin measurements)
+* Multimeter (IDD pin measurements)
 
 
 
@@ -92,27 +88,27 @@ Multimeter (IDD pin measurements)
 
 
 
-Duty‑cycled sensing (7‑second sampling window)
+* Duty‑cycled sensing (7‑second sampling window)
 
 
 
-STOP‑mode scheduling (STM32)
+* STOP‑mode scheduling (STM32)
 
 
 
-DMA‑based ECG sampling (125 Hz, 250‑sample batches)
+* DMA‑based ECG sampling (125 Hz, 250‑sample batches)
 
 
 
-Sensor‑level power gating (SHT31, AD8232 SDN pin)
+* Sensor‑level power gating (SHT31, AD8232 SDN pin)
 
 
 
-Event‑driven BLE alerts (temperature, BPM > 102, leads‑off)
+* Event‑driven BLE alerts (temperature, BPM > 102, leads‑off)
 
 
 
-Peripheral de‑initialisation + clock gating
+* Peripheral de‑initialisation + clock gating
 
 
 
@@ -122,7 +118,7 @@ Peripheral de‑initialisation + clock gating
 
 
 
-#### **Parameter                      Result**
+#### **Parameter                                               Result**
 
 
 
@@ -158,31 +154,17 @@ BLE Alerts                        ------->              Triggered on threshold e
 
 ├── Core/                 ---->    # STM32 HAL core files
 
-|
-
 ├── Drivers/              ---->    # STM32 peripheral drivers
-
-|
 
 ├── ProjectFiles/         ---->    # CubeMX + CubeIDE project files
 
-|
-
 ├── ESP32/                ---->    # ESP32 BLE + deep sleep firmware
-
-|
 
 ├── Docs/                 ---->    # Documentation, diagrams, photos
 
-|
-
 ├── README.md             ---->    # Project overview
 
-|
-
 ├── LICENSE               ---->    # MIT License
-
-|
 
 └── .gitignore
 
@@ -198,15 +180,11 @@ BLE Alerts                        ------->              Triggered on threshold e
 
 
 
-Open project in STM32CubeIDE
+1. Open project in STM32CubeIDE
 
+2. Build → Flash via ST‑Link
 
-
-Build → Flash via ST‑Link
-
-
-
-Power via external supply for accurate IDD measurements
+3. Power via external supply for accurate IDD measurements
 
 
 
@@ -214,15 +192,11 @@ Power via external supply for accurate IDD measurements
 
 
 
-Open in Arduino IDE / PlatformIO
+1. Open in Arduino IDE / PlatformIO
 
+2. Flash via USB‑UART
 
-
-Flash via USB‑UART
-
-
-
-BLE alerts enabled by default
+3. BLE alerts enabled by default
 
 
 
@@ -230,15 +204,11 @@ BLE alerts enabled by default
 
 
 
-Temperature > 38°C
+1. Temperature > 38°C
 
+2. BPM > 102 bpm
 
-
-BPM > 102 bpm
-
-
-
-ECG leads‑off detection
+3. ECG leads‑off detection
 
 
 
@@ -252,15 +222,15 @@ Alerts are event‑driven, not continuous, reducing wireless overhead.
 
 # 
 
-Transition to STM32WB06 (integrated BLE, lower IDD)
+* Transition to STM32WB06 (integrated BLE, lower IDD)
 
 
 
-Custom PCB to eliminate dev‑board leakage
+* Custom PCB to eliminate dev‑board leakage
 
 
 
-Improved ECG filtering pipeline
+* Improved ECG filtering pipeline
 
 ## 
 
