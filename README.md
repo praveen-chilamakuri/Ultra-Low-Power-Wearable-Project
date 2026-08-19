@@ -10,8 +10,6 @@ This project implements an ultra‑low‑power wearable device capable of long�
 
 * Body temperature
 
-* Threshold‑based BLE alerts
-
 
 
 The system integrates SHT31, AD8232, STM32F401RE, and ESP32 Wroom‑32, using a unified low‑power architecture designed to achieve 45-50 days of operation on a single AAA battery.
@@ -70,7 +68,7 @@ To design and evaluate an ultra‑low‑power wearable capable of multi‑week p
 
 
 
-* AAA Battery (Projected 45-50 days)
+* 3.3V Bench supply (Projected 45-50 days on a single AAA battery)
 
 
 
@@ -164,27 +162,41 @@ To design and evaluate an ultra‑low‑power wearable capable of multi‑week p
 
 
 
-### **STM32**
+### **STM32 (Main MCU)**
 
 
 
-1. Open project in STM32CubeIDE
+1. Download the .ioc file (inside ProjectFiles/) from the repository.
 
-2. Build → Flash via ST‑Link
+2. Open it in STM32CubeMX to load all pin, clock, ADC, DMA, and RTC configurations.
 
-3. Power via external supply for accurate IDD measurements
+3. Click GENERATE CODE and generate a STM32CubeIDE project.
+
+4. Open the generated project in STM32CubeIDE, replace the auto-generated main.c with the optimized main.c (inside Core/Src/) from this repository.
+
+5. Build the project.
+
+6. Flash the STM32 using ST‑Link.
+
+7. For accurate current measurements, power the MCU externally and measure via IDD pins.
 
 
 
-### **ESP32**
+### **ESP32 (BLE-Alerts MCU)**
 
 
 
-1. Open in Arduino IDE / PlatformIO
+1. Open Arduino IDE or PlatformIO.
 
-2. Flash via USB‑UART
+2. Create a new ESP32 project.
 
-3. BLE alerts enabled by default
+3. Paste the esp32\_main.c firmware (inside ESP32/) from this repository.
+
+4. Install required BLE libraries (Arduino auto-installs).
+
+5. Flash the ESP32 via USB‑UART.
+
+6. BLE alerts (temperature, BPM, leads-off) are enabled by default.
 
 
 
