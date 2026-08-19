@@ -1,0 +1,19 @@
+# STM32CubeIDE auto-generated folders
+Debug/
+Release/
+.settings/
+.metadata/
+
+# Build artifacts
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+*.o
+*.log
+*.launch
+
+# Temporary files
+*.tmp
+*.bak
