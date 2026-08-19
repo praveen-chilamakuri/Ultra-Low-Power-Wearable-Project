@@ -125,7 +125,7 @@ To design and evaluate an ultra‑low‑power wearable capable of multi‑week p
 |Average Current Consumption|0.68 mA|
 |Battery Life Projection (AAA)|45-50 days|
 |Temperature Accuracy|Stable single shot SHT31 readings|
-|ECG Performance|Reliable R peak detection|
+|ECG Performance|Reliable R-peak detection|
 |BLE Alerts|Triggered on threshold events only|
 
 
@@ -140,19 +140,19 @@ To design and evaluate an ultra‑low‑power wearable capable of multi‑week p
 
 │
 
-├── Core/                 ---->    # STM32 HAL core files
+├── Core/                 ----------->    # STM32 HAL core files
 
-├── Drivers/              ---->    # STM32 peripheral drivers
+├── Drivers/              ----------->    # STM32 peripheral drivers
 
-├── ProjectFiles/         ---->    # CubeMX + CubeIDE project files
+├── ProjectFiles/         ----------->    # CubeMX + CubeIDE project files
 
-├── ESP32/                ---->    # ESP32 BLE + deep sleep firmware
+├── ESP32/                ----------->    # ESP32 BLE + deep sleep firmware
 
-├── Docs/                 ---->    # Documentation, diagrams, photos
+├── Docs/                 ----------->    # Documentation, diagrams, photos
 
-├── README.md             ---->    # Project overview
+├── README.md             ----------->    # Project overview
 
-├── LICENSE               ---->    # MIT License
+├── LICENSE               ----------->    # MIT License
 
 └── .gitignore
 
