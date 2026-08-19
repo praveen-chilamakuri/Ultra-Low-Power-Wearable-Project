@@ -39,7 +39,7 @@ The system integrates **SHT31, AD8232, STM32F401RE,** and **ESP32 Wroom‑32,** 
 
 
 
-* Documentation and hardware photos (viewing recommended, inside Docs/)
+* Documentation and hardware photos (inside Docs/)
 
 
 
