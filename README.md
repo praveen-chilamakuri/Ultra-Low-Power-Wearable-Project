@@ -1,8 +1,16 @@
-# **Overview**
+# **Ultra-Low-Power Wearable for Long-Term Physiological Monitoring**
 
 
 
-This project implements an ultra‑low‑power wearable device capable of long‑term monitoring of:
+### **Heart Rate • Temperature • BLE Alerts • Multi‑Week Battery Life**
+
+# 
+
+# **📌Overview**
+
+
+
+This project implements an **ultra‑low‑power wearable device** capable of long‑term monitoring of:
 
 
 
@@ -12,7 +20,7 @@ This project implements an ultra‑low‑power wearable device capable of long�
 
 
 
-The system integrates SHT31, AD8232, STM32F401RE, and ESP32 Wroom‑32, using a unified low‑power architecture designed to achieve 45-50 days of operation on a single AAA battery.
+The system integrates **SHT31, AD8232, STM32F401RE,** and **ESP32 Wroom‑32,** using a unified low‑power architecture designed to achieve **45-50 days of operation on a single AAA battery.**
 
 
 
@@ -36,11 +44,11 @@ The system integrates SHT31, AD8232, STM32F401RE, and ESP32 Wroom‑32, using a 
 
 
 
-This work was completed as part of the MSc Embedded Systems Engineering dissertation at Coventry University (2026).
+This work was completed as part of the **MSc Embedded Systems Engineering** dissertation at Coventry University (2026).
 
 ### 
 
-### **Aim**
+### **🎯Aim**
 
 
 
@@ -48,37 +56,37 @@ To design and evaluate an ultra‑low‑power wearable capable of multi‑week p
 
 
 
-### **Hardware Used**
+### **🔧Hardware Used**
 
 
 
-* STM32F401RE Nucleo (Stop/Sleep modes, DMA sampling)
+* **STM32F401RE Nucleo** (Stop/Sleep modes, DMA sampling)
 
 
 
-* ESP32 Wroom‑32 DevKit (Deep sleep + BLE alerts)
+* **ESP32 Wroom‑32 DevKit** (Deep sleep + BLE alerts)
 
 
 
-* AD8232 ECG Front-End
+* **AD8232 ECG Front-End**
 
 
 
-* SHT31 Temperature Sensor
+* **SHT31 Temperature Sensor**
 
 
 
-* 3.3V Bench supply (Projected 45-50 days on a single AAA battery)
+* **3.3V Bench supply** (Projected 45-50 days on a single AAA battery)
 
 
 
-* Multimeter (IDD pin measurements)
+* **Multimeter** (IDD pin measurements)
 
 
 
 # 
 
-# **System Architecture**
+# **🧠System Architecture**
 
 
 
@@ -112,7 +120,7 @@ To design and evaluate an ultra‑low‑power wearable capable of multi‑week p
 
 
 
-# **Experimental Results**
+# **📈Experimental Results**
 
 
 
@@ -120,21 +128,21 @@ To design and evaluate an ultra‑low‑power wearable capable of multi‑week p
 
 |**Parameter**|**Result**|
 |-|-|
-|Average Current Consumption|0.68 mA|
-|Battery Life Projection (AAA)|45-50 days|
-|Temperature Accuracy|Stable single shot SHT31 readings|
-|ECG Performance|Reliable R-peak detection|
-|BLE Alerts|Triggered on threshold events only|
+|**Average Current Consumption**|**0.68 mA**|
+|**Battery Life Projection (AAA)**|**45-50 days**|
+|**Temperature Accuracy**|Stable single shot SHT31 readings|
+|**ECG Performance**|Reliable R-peak detection|
+|**BLE Alerts**|Triggered on threshold events only|
 
 
 
 
 
-# **Repository Structure**
+# **📂Repository Structure**
 
 
 
-**Ultra-Low-Power-Wearable-Project**/
+Ultra-Low-Power-Wearable-Project/
 
 │
 
@@ -158,35 +166,35 @@ To design and evaluate an ultra‑low‑power wearable capable of multi‑week p
 
 
 
-# **How to Build \& Flash**
+# **🔧How to Build \& Flash**
 
 
 
-### **STM32 (Main MCU)**
+### **🟦STM32 (Main MCU)**
 
 
 
 1. Download the .ioc file (inside ProjectFiles/) from the repository.
 
-2. Open it in STM32CubeMX to load all pin, clock, ADC, DMA, and RTC configurations.
+2. Open it in **STM32CubeMX** to load all pin, clock, ADC, DMA, and RTC configurations.
 
-3. Click GENERATE CODE and generate a STM32CubeIDE project.
+3. Click **GENERATE CODE** and generate a **STM32CubeIDE** project.
 
-4. Open the generated project in STM32CubeIDE, replace the auto-generated main.c with the optimized main.c (inside Core/Src/) from this repository.
+4. Open the generated project in **STM32CubeIDE**, **replace the auto-generated** main.c with the optimized main.c (inside Core/Src/) from this repository.
 
 5. Build the project.
 
-6. Flash the STM32 using ST‑Link.
+6. Flash the STM32 using **ST‑Link.**
 
-7. For accurate current measurements, power the MCU externally and measure via IDD pins.
-
-
-
-### **ESP32 (BLE-Alerts MCU)**
+7. For accurate current measurements, **power the MCU externally** and measure via **IDD pins.**
 
 
 
-1. Open Arduino IDE or PlatformIO.
+### **🟩ESP32 (BLE-Alerts MCU)**
+
+
+
+1. Open **Arduino IDE** or **PlatformIO.**
 
 2. Create a new ESP32 project.
 
@@ -194,13 +202,13 @@ To design and evaluate an ultra‑low‑power wearable capable of multi‑week p
 
 4. Install required BLE libraries (Arduino auto-installs).
 
-5. Flash the ESP32 via USB‑UART.
+5. Flash the **ESP32** via **USB‑UART.**
 
-6. BLE alerts (temperature, BPM, leads-off) are enabled by default.
+6. BLE alerts (temperature, BPM, leads-off) are **enabled by default.**
 
 
 
-### **BLE Alerts Implemented**
+### **📡BLE Alerts Implemented**
 
 
 
@@ -212,17 +220,17 @@ To design and evaluate an ultra‑low‑power wearable capable of multi‑week p
 
 
 
-Alerts are event‑driven, not continuous, reducing wireless overhead.
+Alerts are **event‑driven**, not continuous, reducing wireless overhead.
 
 
 
 ## 
 
-# **Future Work**
+# **🔮Future Work**
 
 # 
 
-* Transition to STM32WB06 (integrated BLE, lower IDD)
+* Transition to **STM32WB06** (integrated BLE, lower IDD)
 
 
 
@@ -236,7 +244,7 @@ Alerts are event‑driven, not continuous, reducing wireless overhead.
 
 ## 
 
-# **License**
+# **📜License**
 
 
 
