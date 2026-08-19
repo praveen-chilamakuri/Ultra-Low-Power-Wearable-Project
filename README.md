@@ -1,4 +1,4 @@
-## **Overview**
+# **Overview**
 
 
 
@@ -22,7 +22,7 @@ The system integrates SHT31, AD8232, STM32F401RE, and ESP32 Wroom‑32, using a 
 
 
 
-#### **This repository contains:**
+### **This repository contains:**
 
 
 
@@ -44,9 +44,9 @@ Documentation and hardware photos
 
 This work was completed as part of the MSc Embedded Systems Engineering dissertation at Coventry University (2026).
 
+### 
 
-
-#### **Aim**
+### **Aim**
 
 
 
@@ -54,7 +54,7 @@ To design and evaluate an ultra‑low‑power wearable capable of multi‑week p
 
 
 
-#### **Hardware Used**
+### **Hardware Used**
 
 
 
@@ -82,13 +82,13 @@ Multimeter (IDD pin measurements)
 
 
 
+# 
+
+# **System Architecture**
 
 
-## **System Architecture**
 
-
-
-#### **Key Low-Power Techniques**
+### **Key Low-Power Techniques**
 
 
 
@@ -118,11 +118,11 @@ Peripheral de‑initialisation + clock gating
 
 
 
-## **Experimental Results**
+# **Experimental Results**
 
 
 
-###### Parameter                                  Result
+#### **Parameter                      Result**
 
 
 
@@ -148,11 +148,11 @@ BLE Alerts                        ------->              Triggered on threshold e
 
 
 
-## **Repository Structure**
+# **Repository Structure**
 
 
 
-#### **Ultra-Low-Power-Wearable-Project**/
+### **Ultra-Low-Power-Wearable-Project**/
 
 │
 
@@ -190,11 +190,11 @@ BLE Alerts                        ------->              Triggered on threshold e
 
 
 
-## **How to Build \& Flash**
+# **How to Build \& Flash**
 
 
 
-#### **STM32**
+### **STM32**
 
 
 
@@ -210,7 +210,7 @@ Power via external supply for accurate IDD measurements
 
 
 
-#### **ESP32**
+### **ESP32**
 
 
 
@@ -226,7 +226,7 @@ BLE alerts enabled by default
 
 
 
-#### **BLE Alerts Implemented**
+### **BLE Alerts Implemented**
 
 
 
@@ -248,9 +248,9 @@ Alerts are event‑driven, not continuous, reducing wireless overhead.
 
 ## 
 
-## **Future Work**
+# **Future Work**
 
-
+# 
 
 Transition to STM32WB06 (integrated BLE, lower IDD)
 
@@ -266,7 +266,7 @@ Improved ECG filtering pipeline
 
 ## 
 
-## **License**
+# **License**
 
 
 
