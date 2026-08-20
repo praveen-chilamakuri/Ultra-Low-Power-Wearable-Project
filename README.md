@@ -1,9 +1,6 @@
 # Ultra-Low-Power Wearable for Long-Term Physiological Monitoring
 
-![License: MIT](https://shields.io)
-![MCU: STM32F401RE](https://shields.io)
-![Wireless: ESP32](https://shields.io)
-![Field: Embedded%20Systems](https://shields.io)
+**License:** `MIT` | **MCU:** `STM32F401RE` | **Wireless:** `ESP32` | **Field:** `Embedded Systems`
 
 An ultra‑low‑power wearable device designed for long‑term monitoring of **Heart Rate (ECG R‑peak detection)** and **Body Temperature**. The architecture integrates specialized duty-cycling, DMA data transfers, and sensor-level power gating to deliver continuous multi-week monitoring from a single AAA battery.
 
@@ -32,7 +29,7 @@ The system bridges an **STM32F401RE Nucleo** (Main MCU managing scheduling, samp
 | **PA4** | `AD8232_SDN` | AD8232 SDN | Power gating / shutting down ECG front-end |
 | **PA5** | `LO_PLUS` | AD8232 LOD+ | Leads-off detection (Positive) |
 | **PA6** | `LO_MINUS` | AD8232 LOD- | Leads-off detection (Negative) |
-| **PA7** | `ESP32_WKUP` | ESP32 Ext Wakeup | Waking up ESP32 from Deep Sleep via GPIO pulse |
+| **PA7** | `ESP32_WKUP` | ESP32 Ext Wakeup (GPIO4 / RTC_GPIO10) | Waking up ESP32 from Deep Sleep via GPIO pulse |
 | **PB6** | `I2C1_SCL` | SHT31 SCL | I2C Clock for temperature sensor |
 | **PB7** | `I2C1_SDA` | SHT31 SDA | I2C Data for temperature sensor |
 
@@ -41,7 +38,7 @@ The system bridges an **STM32F401RE Nucleo** (Main MCU managing scheduling, samp
 * 💤 **STOP‑Mode Scheduling:** STM32 rests in low-power STOP mode between measurement blocks.
 * 📊 **DMA‑Based ECG Sampling:** Background ADC sampling at 125 Hz in 250‑sample batches.
 * 🔌 **Sensor Power Gating:** Physical power isolation of SHT31 and AD8232 when idle.
-* 📡 **Clock Gating:** Active peripheral de‑initialization before dropping to low-power states.
+* 🛑 **Clock Gating:** Active peripheral de‑initialization before dropping to low-power states.
 
 ---
 
@@ -49,15 +46,15 @@ The system bridges an **STM32F401RE Nucleo** (Main MCU managing scheduling, samp
 
 | Parameter | Result | Operational Notes |
 | :--- | :--- | :--- |
-| **Average Current Consumption** | 0.68 mA | Measured via IDD jumper pins under complete system loop |
+| **Average Current Consumption** | 0.68 mA | Measured via IDD jumper pins |
 | **Battery Life Projection** | ~45 Days | Adjusted estimate derived from continuous deployment profile |
 | **Temperature Accuracy** | Stable | Verified through single-shot SHT31 sensor polling |
 | **ECG Performance** | Reliable | Clean R-peak extraction under static test metrics |
 | **BLE Alerts** | Event-Driven | Triggered exclusively during anomalous metric thresholds |
 
 > 🔋 **Battery Lifespan Calculation:**
-> \[\text{Operating Hours} = \frac{\text{Battery Capacity (800 mAh)}}{\text{Average Current (0.68 mA)}} \approx 1176.47\text{ Hours } (\approx 49\text{ Days Theoretical})\]
-> *The real-world lifecycle is estimated at **45 days** to account for standard battery self-discharge coefficients, minor operating voltage dropoff, and peak BLE transmission current spikes.*
+> * **Operating Hours:** 800 mAh / 0.68 mA ≈ 1,176.47 Hours (≈ 49 Days Theoretical)
+> * **Real-World Estimation:** Adjusted to **45 days** to account for battery self-discharge, voltage dropoff, and peak BLE transmission spikes.
 
 ---
 
@@ -141,7 +138,7 @@ Ultra-Low-Power-Wearable-Project/
 ## 🔮 Future Development Path
 * **Silicon Integration:** Migrate design to the **STM32WB06** system-on-chip to combine processing and BLE operations onto a single die, eliminating inter-MCU link overhead.
 * **Form-Factor Engineering:** Layout a dedicated, multi-layer **Custom PCB** to deprecate developer kit modules and remove parasitic LDO and UART bridge leakages.
-* **Algorithmic Hardening:** Move the digital ECG filtering structures into a localized stream pipeline working directly against circular DMA buffers.
+* **Algorithmic Hardening:** Move digital ECG filtering into a localized streaming pipeline using circular DMA buffers to drastically reduce RAM allocation and latency.
 
 ---
 
