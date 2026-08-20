@@ -1,10 +1,22 @@
 # Ultra-Low-Power Wearable for Long-Term Physiological Monitoring
 
-**License:** `MIT` | **MCU:** `STM32F401RE` | **Wireless:** `ESP32` | **Field:** `Embedded Systems`
+**License:** `MIT` | **MCU:** `STM32F401RE` | **Wireless:** `ESP32` | **Field:** `Embedded Systems` | **Sensors:** `SHT31, AD8232` | **Focus:** `Low-Power`
 
 An ultra‑low‑power wearable device designed for long‑term monitoring of **Heart Rate (ECG R‑peak detection)** and **Body Temperature**. The architecture integrates specialized duty-cycling, DMA data transfers, and sensor-level power gating to deliver continuous multi-week monitoring from a single AAA battery.
 
 This project was developed as part of the **MSc Embedded Systems Engineering dissertation at Coventry University (2026)**.
+
+---
+
+## ⚡ Technical Highlights
+* 🔋 **0.68 mA average current** measured via IDD pins
+* ⏳ **45-50 days projected battery life** on a single AAA cell
+* 🔄 **DMA‑based ECG sampling** at 125 Hz (250‑sample batches)
+* 📡 **Event‑driven BLE alerts** (ESP32 deep sleep except during anomalies)
+* 🔌 **Full sensor power gating** for SHT31 & AD8232
+* ⚙️ **Deterministic low‑power state machine** controlling all sensing and radio activity
+* ⏱️ **STOP‑mode scheduling** with RTC wakeups every 7 seconds
+* ⚠️ **Hardware‑level leads‑off detection** using AD8232 LOD pins
 
 ---
 
@@ -19,6 +31,43 @@ To design and evaluate an ultra‑low‑power physiological monitor utilizing op
 ## 🛠️ Hardware Architecture & Pin Connections
 
 The system bridges an **STM32F401RE Nucleo** (Main MCU managing scheduling, sampling, and processing) and an **ESP32 Wroom‑32 DevKit** (Secondary network MCU handling BLE alerts).
+
+```mermaid
+graph LR
+    %% Sensors Group
+    subgraph Sensors [Physiological Inputs]
+        A[AD8232 ECG Sensor]
+        B[SHT31 Temp Sensor]
+    end
+
+    %% Processing Group
+    subgraph Processing [Main Processing & Power System]
+        C[STM32F401RE]
+    end
+
+    %% Wireless Group
+    subgraph Communication [Event-Driven Wireless]
+        D{Alert Triggered?}
+        E[ESP32 MCU]
+        F((BLE Transmission))
+    end
+
+    %% Target Node
+    G[User / Smart Device]
+
+    %% Connections
+    A -->|Analog & LOD| C
+    B -->|I2C Data| C
+    C --> D
+    D -->|Yes: GPIO Wakeup| E
+    E --> F
+    F -.->|Wireless Link| G
+
+    %% Styling
+    style C fill:#1f4e79,stroke:#fff,stroke-width:2px,color:#fff
+    style E fill:#d9534f,stroke:#fff,stroke-width:2px,color:#fff
+    style G fill:#5cb85c,stroke:#fff,stroke-width:2px,color:#fff
+```
 
 | STM32 Pin | Label / Function | Connected To | Purpose |
 | :--- | :--- | :--- | :--- |
@@ -139,8 +188,9 @@ Ultra-Low-Power-Wearable-Project/
 * **Silicon Integration:** Migrate design to the **STM32WB06** system-on-chip to combine processing and BLE operations onto a single die, eliminating inter-MCU link overhead.
 * **Form-Factor Engineering:** Layout a dedicated, multi-layer **Custom PCB** to deprecate developer kit modules and remove parasitic LDO and UART bridge leakages.
 * **Algorithmic Hardening:** Move digital ECG filtering into a localized streaming pipeline using circular DMA buffers to drastically reduce RAM allocation and latency.
+* **RTOS Integration:** Implement an RTOS framework to establish modular task scheduling, isolating time-critical biosensing threads from communication stacks while optimizing low-power sleep states.
 
 ---
 
 ## 📄 License
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
