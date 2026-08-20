@@ -34,27 +34,11 @@ The system bridges an **STM32F401RE Nucleo** (Main MCU managing scheduling, samp
 
 ```mermaid
 graph LR
-    %% Sensor Nodes
-    A[AD8232 ECG SENSOR] --> C
-    B[SHT31 TEMP SENSOR] --> C
-
-    %% Core Path Nodes
-    C[STM32F401RE] --> D[ALERT]
-    D --> E[ESP32]
-    E --> F[BLE]
-    F --> G[USER]
-
-    %% Color Styles Matching Your exact Mockup
-    style A fill:#1a1a1a,stroke:#777,stroke-width:1px,color:#fff
-    style B fill:#1a1a1a,stroke:#777,stroke-width:1px,color:#fff
-    style C fill:#2b5c8f,stroke:#fff,stroke-width:1px,color:#fff
-    style D fill:#1a1a1a,stroke:#777,stroke-width:1px,color:#fff
-    style E fill:#d9534f,stroke:#fff,stroke-width:1px,color:#fff
-    style F fill:#1a1a1a,stroke:#777,stroke-width:1px,color:#fff
-    style G fill:#5cb85c,stroke:#fff,stroke-width:1px,color:#fff
-
-    %% Smooth out edge routing curves to match your image style
-    linkStyle default stroke:#777,stroke-width:1px,color:#fff;
+    SENSORS[AD8232 ECG SENSOR + SHT31 TEMP SENSOR] --> MCU[STM32F401RE]
+    MCU --> ALERT[ESP32 WAKEUP]
+    ALERT --> ESP32[WIRELESS COMMUNICATION]
+    ESP32 --> BLE[BLE]
+    BLE --> USER[USER]
 ```
 
 | STM32 Pin | Label / Function | Connected To | Purpose |
