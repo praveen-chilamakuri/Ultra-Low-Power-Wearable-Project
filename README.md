@@ -32,6 +32,9 @@ To design and evaluate an ultra‑low‑power physiological monitor utilizing op
 
 The system bridges an **STM32F401RE Nucleo** (Main MCU managing scheduling, sampling, and processing) and an **ESP32 Wroom‑32 DevKit** (Secondary network MCU handling BLE alerts).
 
+![Architecture Flow Diagram](./Docs/architecture & execution/architecture flow.svg)
+
+
 | STM32 Pin | Label / Function | Connected To | Purpose |
 | :--- | :--- | :--- | :--- |
 | **PA0** | `SHT31_PWR` | SHT31 VCC | Power gating the temperature sensor |
