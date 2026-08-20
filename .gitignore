@@ -1,4 +1,6 @@
-# STM32CubeIDE auto-generated folders
+# ==========================================
+# STM32CubeIDE Auto-Generated & Build Folders
+# ==========================================
 Debug/
 Release/
 .settings/
@@ -11,6 +13,8 @@ Release/
 *.map
 *.list
 *.o
+*.su
+*.d
 *.log
 *.launch
 
@@ -18,3 +22,28 @@ Release/
 *.tmp
 *.bak
 
+# ==========================================
+# ESP32 Tools & Build Artifacts
+# ==========================================
+# If using PlatformIO for ESP32
+.pio/
+.pioenvs/
+.piolibdeps/
+.clang_complete
+
+# If using Arduino IDE for ESP32
+build/
+*~
+
+# ==========================================
+# Core OS / Editor System Garbage
+# ==========================================
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# VS Code (if used for editing)
+.vscode/
