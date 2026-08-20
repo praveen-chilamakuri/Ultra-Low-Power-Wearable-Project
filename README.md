@@ -32,19 +32,6 @@ To design and evaluate an ultra‑low‑power physiological monitor utilizing op
 
 The system bridges an **STM32F401RE Nucleo** (Main MCU managing scheduling, sampling, and processing) and an **ESP32 Wroom‑32 DevKit** (Secondary network MCU handling BLE alerts).
 
-```mermaid
-graph LR
-    SENSORS[AD8232 ECG SENSOR + SHT31 TEMP SENSOR] --> MCU[STM32F401RE]
-    MCU --> ALERT[ALERT]
-    ALERT --> ESP[ESP32]
-    ESP --> BLE[BLE]
-    BLE --> USER[USER]
-
-    %% Color Overrides for Block Styling %%
-    classDef blueBlocks fill:#1E88E5,stroke:#0D47A1,stroke-width:2px,color:#FFFFFF;
-    class SENSORS,MCU,ALERT,ESP,BLE,USER blueBlocks;
-```
-
 | STM32 Pin | Label / Function | Connected To | Purpose |
 | :--- | :--- | :--- | :--- |
 | **PA0** | `SHT31_PWR` | SHT31 VCC | Power gating the temperature sensor |
