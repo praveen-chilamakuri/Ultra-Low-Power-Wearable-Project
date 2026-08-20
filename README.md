@@ -32,7 +32,9 @@ To design and evaluate an ultra‑low‑power physiological monitor utilizing op
 
 The system bridges an **STM32F401RE Nucleo** (Main MCU managing scheduling, sampling, and processing) and an **ESP32 Wroom‑32 DevKit** (Secondary network MCU handling BLE alerts).
 
-![Architecture Flow Diagram](./Docs/architecture%20%26%20execution/architecture%20flow.svg)
+<p align="center">
+  <img src="./Docs/architecture%20%26%20execution/architecture%20flow.svg" alt="Architecture Flow Diagram" width="500">
+</p>
 
 | STM32 Pin | Label / Function | Connected To | Purpose |
 | :--- | :--- | :--- | :--- |
