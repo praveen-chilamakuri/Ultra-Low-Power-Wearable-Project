@@ -34,36 +34,14 @@ The system bridges an **STM32F401RE Nucleo** (Main MCU managing scheduling, samp
 
 ```mermaid
 graph LR
-    %% Sensors Group
-    subgraph Sensors [Physiological Inputs]
-        A[AD8232 ECG Sensor]
-        B[SHT31 Temp Sensor]
-    end
+    A[AD8232 ECG SENSOR] --> C[STM32F401RE]
+    B[SHT31 TEMP SENSOR] --> C
+    C --> D[ALERT]
+    D --> E[ESP32]
+    E --> F[BLE]
+    F --> G[USER]
 
-    %% Processing Group
-    subgraph Processing [Main Processing & Power System]
-        C[STM32F401RE]
-    end
-
-    %% Wireless Group
-    subgraph Communication [Event-Driven Wireless]
-        D{Alert Triggered?}
-        E[ESP32 MCU]
-        F((BLE Transmission))
-    end
-
-    %% Target Node
-    G[User / Smart Device]
-
-    %% Connections
-    A -->|Analog & LOD| C
-    B -->|I2C Data| C
-    C --> D
-    D -->|Yes: GPIO Wakeup| E
-    E --> F
-    F -.->|Wireless Link| G
-
-    %% Styling
+    %% Styling to match your image palette
     style C fill:#1f4e79,stroke:#fff,stroke-width:2px,color:#fff
     style E fill:#d9534f,stroke:#fff,stroke-width:2px,color:#fff
     style G fill:#5cb85c,stroke:#fff,stroke-width:2px,color:#fff
