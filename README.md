@@ -35,10 +35,14 @@ The system bridges an **STM32F401RE Nucleo** (Main MCU managing scheduling, samp
 ```mermaid
 graph LR
     SENSORS[AD8232 ECG SENSOR + SHT31 TEMP SENSOR] --> MCU[STM32F401RE]
-    MCU --> ALERT[ESP32 WAKEUP]
-    ALERT --> ESP32[WIRELESS COMMUNICATION]
-    ESP32 --> BLE[BLE]
+    MCU --> ALERT[ALERT]
+    ALERT --> ESP[ESP32]
+    ESP --> BLE[BLE]
     BLE --> USER[USER]
+
+    %% Color Overrides for Block Styling %%
+    classDef blueBlocks fill:#1E88E5,stroke:#0D47A1,stroke-width:2px,color:#FFFFFF;
+    class SENSORS,MCU,ALERT,ESP,BLE,USER blueBlocks;
 ```
 
 | STM32 Pin | Label / Function | Connected To | Purpose |
